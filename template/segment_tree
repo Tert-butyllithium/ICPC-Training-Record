@@ -1,0 +1,174 @@
+//===========================================
+//segment tree
+//final version
+//by kevin_samuel(fenice)
+//本模板为转载模板，后面的注释和主函数的验证为Alei添加
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+//线段树
+
+
+using namespace std;
+
+
+#define MAXN 100
+#define INF 0x3fffffff
+
+
+int A[MAXN];         //操作的序列,记得为（1...n）非（0...n）
+//int max;
+//int min;
+
+
+struct node
+{
+    int left;
+    int right;
+    int max;           //维护最大值
+    int sum;          //维护区间和
+    int min;           //维护最小值
+}Tree[MAXN<<2];        //存储线段树
+
+
+
+
+void maintain(int root)         //向上调整，使得让线段树维护区间最小值最大值区间和
+{
+    int LC = root<<1;       //此根的左孩子
+    int RC = (root<<1)+1;       //此根的右孩子
+    Tree[root].sum = Tree[LC].sum + Tree[RC].sum;       //根的区间和
+    Tree[root].max = max(Tree[LC].max,Tree[RC].max);        //根的最大值
+    Tree[root].min = min(Tree[LC].min,Tree[RC].min);        //根的最小值
+}
+
+
+void Build(int root,int start,int end)                     //构建线段树
+{                                                           //初始化时传入Build(1,1,n);
+    Tree[root].left = start;            //建区间大小
+    Tree[root].right = end;
+    if(start == end)                    //当到达叶子节点时
+    {
+        Tree[root].sum = A[start];
+        Tree[root].max = A[start];
+        Tree[root].min = A[start];
+        return;
+    }
+    int mid = (start + end)>>1;         //中间分开
+    Build(root<<1,start,mid);           //对左孩子建树，左边孩子的编号为root*2
+    Build((root<<1)+1,mid+1,end);       //对右边孩子建树
+    maintain(root);
+}
+
+
+void update(int root,int pos,int value)                     //更新点的值
+{
+    if(Tree[root].left == Tree[root].right && Tree[root].left == pos)   //更新叶子节点的值
+    {
+        Tree[root].sum += value;
+        Tree[root].max += value;
+        Tree[root].min += value;
+        return;
+    }
+    int mid = (Tree[root].left + Tree[root].right)>>1;          //中间分开成两个区间
+    if(pos <= mid)                                       //更新的值在左孩子
+        update(root<<1,pos,value);                          //更新左孩子
+    else
+        update((root<<1)+1,pos,value);                  //更新的值在右孩子
+    maintain(root);                                 //叶子节点更新完成后，会回溯到他的父节点，这样一直往上更新到根节点，维护线段树性质
+}
+
+
+int Query(int root,int start,int end)                         //查询区间和（start, end）根节点为1
+{
+    if(start == Tree[root].left && Tree[root].right == end)         //正好匹配到查询区间，直接返回区间和
+    {
+        return Tree[root].sum;
+    }
+    int mid = (Tree[root].left + Tree[root].right)>>1;                 //分开区间
+    int ret = 0;
+    if(end <= mid)                                              //查询结果在左边区间
+        ret += Query(root<<1,start,end);                        //将左区间的查询结果返回，并记录在结果和中
+    else if(start >= mid+1)                                    //查询结果在右区间
+        ret += Query((root<<1)+1,start,end);
+    else                                                        //查询结果包含在左右两个区间中
+    {
+        ret += Query(root<<1,start,mid);            //查左的一部分
+        ret += Query((root<<1)+1,mid+1,end);            //查右的一部分
+    }
+    return ret;                             //返回本次查询结果
+}
+
+
+int RminQ(int root,int start,int end)              //查询区间最小值
+{
+    if(start == Tree[root].left && Tree[root].right == end)             //正好匹配区间
+    {
+        return Tree[root].min;
+    }
+    int mid = (Tree[root].left + Tree[root].right)>>1;                  //区间分开，去查左右孩子
+    int ret = INF;                                             //先把结果记录为很大
+    if(end <= mid)                                          //  完全左区间匹配
+        ret = min(ret,RminQ(root<<1,start,end));
+    else if(start >= mid+1)                                 //完全右区间匹配
+        ret = min(ret,RminQ((root<<1)+1,start,end));
+    else
+    {
+        int a = RminQ(root<<1,start,mid);
+        int b = RminQ((root<<1)+1,mid+1,end);
+        ret = min(a,b);                                     //求左右区间和匹配区间相符的最小值的较小值
+    }
+    return ret;                             //记得要返回本次查询的结果
+}
+
+
+int RmaxQ(int root,int start,int end)                 //查询区间最大值
+{
+    if(start == Tree[root].left && Tree[root].right == end)
+    {
+        return Tree[root].max;
+    }
+    int mid = (Tree[root].left + Tree[root].right)>>1;
+    int ret = 0;                                        //************可能是 （-INF）要尽可能的小
+    if(end <= mid)
+        ret = max(ret,RmaxQ(root<<1,start,end));        //完全左孩子区间匹配
+    else if(start >= mid+1)
+        ret = max(ret,RmaxQ((root<<1)+1,start,end));        //完全右孩子区间匹配
+    else
+    {
+        int a = RmaxQ(root<<1,start,mid);
+        int b = RmaxQ((root<<1)+1,mid+1,end);
+        ret = max(a,b);                                 //求的左右两个区间和匹配区间相符的最大值得较大者
+    }
+    return ret;                             //记得返回结果
+}
+
+
+int main()
+{
+    for(int i = 1; i <= 10; i++)
+        A[i] = i;
+    Build(1,1,10);
+    cout << " (1..10)的数组，对应值如下：" << endl;
+    for(int i = 1; i <= 10; i++)
+        cout << A[i] << " ";
+    cout << endl;
+    cout << "（1..5）区间最小值:" << RminQ(1,1,5) << endl;
+    cout << " (1..5)区间最大值：" << RmaxQ(1,1,5) << endl;
+    cout << " (1..5)区间和：" << Query(1,1,5) << endl;
+    cout << " 把位置1的值加上100: " << endl;
+    update(1, 1, 100);
+    cout << " (1..5)区间最小值" << RminQ(1,1,5) << endl;
+    cout << " (1..5)区间最大值：" << RmaxQ(1,1,5) << endl;
+    cout << " (1..5)区间和：" << Query(1,1,5) << endl;
+    return 0;
+}
+/*
+*总结一下线段树：
+*(1)维护区间和，使得区间求和在O(log(n))的复杂度下完成
+*(2)维护区间最小值，使得查询区间最小值在O(log(n))的复杂度下完成
+*(3)维护区间最大值
+****************************************************************
+*(4)更新序列中某个值，也能使得树维护区间的最大，最小，和区间和。
+*(5)基于区间和的应用，最小值得应用，例如序列的动态更新查询
+*/

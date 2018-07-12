@@ -1,4 +1,4 @@
-//https://blog.csdn.net/u014141559/article/details/43866459
+//https://www.jianshu.com/p/8ce6bcbbeb26
 
 const int maxn=10010;
 using namespace std;

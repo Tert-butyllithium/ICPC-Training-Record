@@ -2,6 +2,7 @@
 //但是和蔡队的代码几乎相同
 //思路是：a1,a2,a3...ai,aj...an转化为a1,a2...an,a1,a2...ai...an 也就是扩增为原来的两倍
 //https://www.nowcoder.com/acm/contest/139/J
+//标程是离线+树状数组，参看https://www.nowcoder.com/discuss/87249?type=101
 
 
 #include <cstdio>

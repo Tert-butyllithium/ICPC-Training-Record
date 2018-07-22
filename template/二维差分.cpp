@@ -1,10 +1,10 @@
 //构建
 while(q--){
     scanf("%d%d%d%d%d",&x1,&y1,&x2,&y2,&val);
-    cnt[x1][y1]++;
-		cnt[x1][y2+1]--;
-		cnt[x2+1][y1]--;
-		cnt[x2+1][y2+1]++;
+    cnt[x1][y1]+=val;
+    cnt[x1][y2+1]-=val;
+    cnt[x2+1][y1]-=val;
+    cnt[x2+1][y2+1]+=val;
 }
 
 //恢复

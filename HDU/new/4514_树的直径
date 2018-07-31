@@ -1,0 +1,96 @@
+//并查集判断是否有环，两次bfs得到直径
+//定理：从任意一个点出发，bfs求得到的最长路径的端点必定是直径的一个端点
+//https://blog.csdn.net/m0_37428263/article/details/79322454
+
+#include <bits/stdc++.h>
+const int maxn = 100000 + 10;
+using namespace std;
+vector<pair<int, int> > edges[maxn];
+int fa[maxn],dis[maxn];
+bool vis[maxn];
+int n, m;
+
+int findfa(int x){
+    if(fa[x]==x)
+        return x;
+    else
+        return fa[x] = findfa(fa[x]);
+}
+
+void uni(int x,int y){
+    int _x = findfa(x);
+    int _y = findfa(y);
+    fa[_y] = _x;
+}
+
+long long ans;
+int bfs(int cur)
+{
+    memset(vis, 0, sizeof(vis));
+    memset(dis, 0, sizeof(dis));
+    queue<int> que;
+    ans=0;
+    que.push(cur);
+    
+    int point=cur;
+    while (!que.empty())
+    {
+        int top = que.front();
+        que.pop();
+        if(vis[top]) continue;
+        vis[top]=true;
+        if(dis[top]>ans){
+            ans = dis[top];
+            point = top;
+        }
+        for(pair<int,int> p:edges[top]){
+            int to = p.first, val = p.second;
+            dis[to] = dis[top] + val;
+            que.push(to);
+        }
+    }
+    return point;
+}
+
+int main(int argc, char const *argv[])
+{
+    while(scanf("%d%d",&n,&m)!=EOF){
+        bool flag = false;
+        for (int i = 1; i <= n; i++)
+        {
+            edges[i].clear();
+        }
+        for (int i = 1; i <= n;i++){
+            fa[i] = i;
+        }
+        while (m--)
+        {
+            int from, to, val;
+            scanf("%d%d%d", &from, &to, &val);
+            if(findfa(from)==findfa(to))
+                flag = true;
+            else{
+                uni(from, to);
+            }
+            edges[from].push_back(make_pair(to, val));
+            edges[to].push_back(make_pair(from, val));
+        }
+        if(flag){
+            puts("YES");
+        }
+        else{
+            long long res=0;
+            //这个地方，考虑到这张图可能有多个连通分量，所以必须取得所有的最大值
+            for(int i=1;i<=n;i++){
+                if(fa[i]==i){
+                    int point = bfs(i);
+                    bfs(point);
+                    res=max(res,ans);
+                }
+            }
+            printf("%lld\n",res);
+        }
+    }
+    return 0;
+}
+

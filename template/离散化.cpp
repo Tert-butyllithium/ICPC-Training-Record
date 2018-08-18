@@ -10,7 +10,7 @@ int getid(int x){
     return lower_bound(v.begin(), v.end(), x)-v.begin()+1;
 }
 
-void ini(int x){
+void ini(){
     for(int i=1;i<=n;i++){
         v.push_back(a[i]);
     }

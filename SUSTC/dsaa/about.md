@@ -1,2 +1,0 @@
-linkedlist：lab3
-但是只有f需要linkedlist

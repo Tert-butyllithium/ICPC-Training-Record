@@ -31,7 +31,6 @@ long long test(int val){
 inline bool judge(int val){
 	return test(val) <= tar;
 }
-
 int main(int argc, char const *argv[])
 {
 	int round;
@@ -45,22 +44,17 @@ int main(int argc, char const *argv[])
 		std::sort(arr + 1, arr + n + 1);
 		// printf("%lld\n", test(8));
 		int left = 0, right = arr[n] - arr[1];
-		while(left<=right){
+		while(left<right){
 			int mid = (left + right) / 2;
 			long long cmp = test(mid);
-			if(cmp==tar){
-				left = right = mid;
-				break;
-			}
-			else if(cmp<tar){
+			if(cmp<tar){
 				left = mid + 1;
 			}
 			else{
-				right = mid - 1;
+				right = mid;
 			}
 		}
-    //我也不知道为啥这里取max
-		printf("%d\n", std::max(left , right));
+		printf("%d\n", std::min(left , right));
 	}
 	return 0;
 }

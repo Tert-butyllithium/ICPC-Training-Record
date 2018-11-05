@@ -10,7 +10,7 @@ import java.util.*;
 // }
 
 
-public class Heap<T>{
+class Heap<T> implements Queue<T>{
     private ArrayList<T> list;
     private int sz;
     private final Comparator<? super T> comparator;
@@ -52,7 +52,6 @@ public class Heap<T>{
         if(left>sz) return true;
         T cur=list.get(index);
         T lc=list.get(left);
-
         T rc;
         if(right<=sz) {
             rc = list.get(right);
@@ -81,14 +80,17 @@ public class Heap<T>{
         pushdown(index<<1|1);
     }
 
-    public void enqueue(T val){
+    private boolean enqueue(T val){
+        if(val==null) return false;
         list.add(val);
         sz++;
         pushup((sz)>>1);
+        return true;
     }
 
 
-    public T dequeue(){
+    private T dequeue(){
+        if(sz==0) throw new NoSuchElementException();
         int last=sz;
         T res=list.get(1);
         swap(1,last);
@@ -99,14 +101,46 @@ public class Heap<T>{
         return res;
     }
 
+    @Override
+    public int size() {
+        return sz;
+    }
+
+    @Override
     public boolean isEmpty(){
         return sz==0;
     }
 
-    public void addAll(Collection<T> col){
+    @Override
+    public boolean contains(Object o) {
+        return list.contains(o);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<T> iterator() {
+        return list.iterator();
+    }
+
+    @NotNull
+    @Override
+    public Object[] toArray() {
+        return list.toArray();
+    }
+
+    @NotNull
+    @Override
+    public <T1> T1[] toArray(@NotNull T1[] a) {
+        return list.toArray(a);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> col){
+        if(col==null) return false;
         for(T t:col){
             enqueue(t);
         }
+        return true;
     }
 
     public void addAll(T[] arr){
@@ -131,4 +165,91 @@ public class Heap<T>{
     public String toString() {
         return HeapSort().toString();
     }
+
+    @Override
+    public boolean add(T t) {
+        return enqueue(t);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        int index=1;
+        for(;index<=sz;index++){
+            if(list.get(index).equals(o)){
+                swap(1,index);
+                dequeue();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        return list.containsAll(c);
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c) {
+        Objects.requireNonNull(c);
+        boolean modified=false;
+        for(int i=1;i<=sz;i++){
+            T t=list.get(i);
+            if(c.contains(t)){
+                remove(t);
+                modified=true;
+            }
+        }
+        return modified;
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c) {
+        Objects.requireNonNull(c);
+        boolean modified=false;
+        for(int i=1;i<=sz;i++){
+            T t=list.get(i);
+            if(!c.contains(t)){
+                remove(t);
+                modified=true;
+            }
+        }
+        return modified;
+    }
+
+    @Override
+    public void clear() {
+        list.clear();
+        sz=0;
+    }
+
+    @Override
+    public boolean offer(T t) {
+        return enqueue(t);
+    }
+
+    @Override
+    public T remove() {
+        return dequeue();
+    }
+
+    @Override
+    public T poll() {
+        if(sz==0)
+        return null;
+        else return dequeue();
+    }
+
+    @Override
+    public T element() {
+        if(sz<1) throw new NoSuchElementException();
+        return list.get(1);
+    }
+
+    @Override
+    public T peek() {
+        if(sz<1) return null;
+        return list.get(1);
+    }
+
 }

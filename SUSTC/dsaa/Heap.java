@@ -1,37 +1,42 @@
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
-public class Test {
-    public static void main(String[] args) {
-        Heap<Integer> heap=new Heap<>();
-        heap.push(1);
-        heap.push(3);
-        heap.push(7);
-        heap.push(0);
-        heap.push(2);
-        heap.push(8);
-        while(!heap.isEmpty()) {
-            System.out.println(heap.pop());
-        }
-    }
-}
+// public class Help {
 
-class Heap<T>{
+//     public static void main(String[] args) {
+//        Heap<Integer> heap=new Heap<>((a,b)->(Integer.compare(b,a)));
+//        heap.addAll(new Integer[]{1, 5, 6, 3, 2, 1, 5, 9, 0, 2});
+//        System.out.println(heap);
+//     }
+// }
+
+
+public class Heap<T>{
     private ArrayList<T> list;
     private int sz;
-    private Comparator<? super T> comparator;
+    private final Comparator<? super T> comparator;
+
     <T extends Comparable<T>>Heap () {
         list = new ArrayList<>();
         list.add(null);
         sz=0;
-        this.comparator= (T a,T b)->a.compareTo(b);
+        this.comparator=null;
     }
+
     Heap(Comparator<? super T> comparator){
         list = new ArrayList<>();
         list.add(null);
         sz=0;
         this.comparator=comparator;
+    }
+
+    private boolean smaller(T a,T b){
+        if(this.comparator==null){
+            Comparable<? super T> c= (Comparable<? super T>) a;
+            return c.compareTo(b)<0;
+        }
+        else{
+            return comparator.compare(a,b)<0;
+        }
     }
 
     private void swap(int a,int b){
@@ -40,7 +45,7 @@ class Heap<T>{
         list.set(b,tmp);
     }
 
-    private boolean mantain(int index){
+    private boolean maintain(int index){
         if(index==0) return true;
         int left=index<<1;
         int right=index<<1|1;
@@ -51,37 +56,39 @@ class Heap<T>{
         T rc;
         if(right<=sz) {
             rc = list.get(right);
-            if (comparator.compare(cur,lc) < 0 && comparator.compare(cur,rc) < 0) return true;
-            if (comparator.compare(lc,rc) < 0) {
+            if (smaller(cur,lc)&& smaller(cur,rc)) return true;
+            if (smaller(lc,rc)) {
                 swap(left, index);
             } else {
                 swap(right, index);
             }
         }
         else{
-            if(comparator.compare(cur,lc)<0) swap(index,left);
+            if(smaller(lc,cur)) swap(index,left);
+            else return true;
         }
         return false;
     }
 
     private void pushup(int index){
-        if(mantain(index)) return;
+        if(maintain(index)) return;
         pushup(index>>1);
     }
 
     private void pushdown(int index){
-        if(mantain(index)) return;
+        if(maintain(index)) return;
         pushdown(index<<1);
         pushdown(index<<1|1);
     }
 
-    public void push(T val){
-         list.add(val);
-         sz++;
-         pushup((list.size()-1)>>1);
+    public void enqueue(T val){
+        list.add(val);
+        sz++;
+        pushup((sz)>>1);
     }
 
-    public T pop(){
+
+    public T dequeue(){
         int last=sz;
         T res=list.get(1);
         swap(1,last);
@@ -96,4 +103,32 @@ class Heap<T>{
         return sz==0;
     }
 
+    public void addAll(Collection<T> col){
+        for(T t:col){
+            enqueue(t);
+        }
+    }
+
+    public void addAll(T[] arr){
+        for(T t:arr){
+            enqueue(t);
+        }
+    }
+
+    public ArrayList<T> HeapSort(){
+        ArrayList<T> res=new ArrayList<>();
+        while(!isEmpty()){
+            res.add(dequeue());
+        }
+        /*list=res;
+        sz=res.size()-1;
+        */
+        addAll(res);
+        return res;
+    }
+
+    @Override
+    public String toString() {
+        return HeapSort().toString();
+    }
 }

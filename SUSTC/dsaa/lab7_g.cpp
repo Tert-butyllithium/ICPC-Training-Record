@@ -1,3 +1,4 @@
+#pragma GCC optimize(2)
 #include <bits/stdc++.h>
 #include <ext/pb_ds/tree_policy.hpp>
 #include <ext/pb_ds/assoc_container.hpp>
@@ -18,24 +19,27 @@ void get_chart(int x, int y)
     {
         pq.insert(arr[i]);
     }
-    chart[x][y] = *pq.find_by_order(m);
+    chart[x][y] = *pq.find_by_order(m-1);
     for (int i = x+y; i <= n; i += y)
     {
-        pq.erase(pq.find(arr[i - y]));
-        if(pq.size()>=m)
-            chart[i][y] = *pq.find_by_order(m);
+        pq.erase(arr[i - y]);
+        if (pq.size() >= m)
+            chart[i][y] = *pq.find_by_order(m-1);
         else
             chart[i][y] = -1;
+        // printf("cur: %d %d %d\n", i,y, chart[i][y]);
     }
 }
+
 
 int main(int argc, char const *argv[]){
     int round;
     scanf("%d",&round);
     while(round--){
         memset(vis,0,sizeof(vis));
-        scanf("%d",&n);
-        for(int i=0;i<n;i++){
+        memset(chart, 0, sizeof(chart));
+        scanf("%d", &n);
+        for(int i=1;i<=n;i++){
             scanf("%d",&arr[i]);
         }
         for(int i=0;i<n;i++){
@@ -52,12 +56,24 @@ int main(int argc, char const *argv[]){
                 get_chart(x, i);
             }
         }
+//         #ifdef _GLIBCXX_DEBUG_ASSERT
+//         for (int i = 1; i <= 5;i++){
+//             for (int j = 1; j <= 5;j++){
+//                 printf("%d ", chart[i][j]);
+//             }
+//             puts("");
+//         }
+// #endif
         for (int i = 0; i < n;i++){
             if(pairs[i].second>m+1){
                 puts("-1");
             }
             else{
-                printf("%d\n", chart[pairs[i].first][pairs[i].second]);
+                int ans = chart[pairs[i].first][pairs[i].second];
+                if(ans>0)
+                    printf("%d\n", ans);
+                else
+                    printf("-1\n");
             }
         }
     }

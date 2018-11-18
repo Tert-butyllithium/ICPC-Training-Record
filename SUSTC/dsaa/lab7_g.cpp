@@ -1,36 +1,44 @@
-#pragma GCC optimize(2)
+#pragma GCC target("avx","avx2","sse4","sse4.1","sse4.2","ssse3","sse3","sse2","sse","f16c")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("inline")
+// #define debug
 #include <bits/stdc++.h>
-#include <ext/pb_ds/tree_policy.hpp>
-#include <ext/pb_ds/assoc_container.hpp>
 using namespace std;
-using namespace __gnu_pbds;
-typedef tree<int, null_type, greater<int>, rb_tree_tag, tree_order_statistics_node_update> rbtree;
 
 const int maxn=40005;
 bool vis[maxn];
 int arr[maxn];
 int chart[maxn][202];
 pair<int,int> pairs[maxn];
+
 int n, m;
 void get_chart(int x, int y)
 {
-    rbtree pq;
-    for (int i = x; i <= n; i += y)
-    {
-        pq.insert(arr[i]);
-    }
-    chart[x][y] = *pq.find_by_order(m-1);
-    for (int i = x+y; i <= n; i += y)
-    {
-        pq.erase(arr[i - y]);
-        if (pq.size() >= m)
-            chart[i][y] = *pq.find_by_order(m-1);
-        else
-            chart[i][y] = -1;
-        // printf("cur: %d %d %d\n", i,y, chart[i][y]);
-    }
+	priority_queue<int,vector<int>,greater<int>> pq;
+	deque<int> enum_list;
+	for (int i = x; i <= n; i += y)
+	{
+		enum_list.push_front(i);
+	}
+	for(auto c:enum_list){
+		if(pq.size()<m){
+			pq.push(arr[c]);
+			if(pq.size()==m){
+				chart[c][y] = pq.top();
+			}
+		}
+		else{
+			if(arr[c]>pq.top()){
+				pq.pop();
+				pq.push(arr[c]);
+				chart[c][y] = pq.top();
+			}
+			else{
+				chart[c][y] = pq.top();
+			}
+		}
+	}
 }
-
 
 int main(int argc, char const *argv[]){
     int round;
@@ -52,18 +60,20 @@ int main(int argc, char const *argv[]){
         for (int i = 0; i <= m+1; i++)
         {
             if(!vis[i]) continue;
-            for (int x = 1; x <= i;x++){
-                get_chart(x, i);
+			for (int x = 1; x <= i; x++)
+			{
+				get_chart(x, i);
             }
         }
-//         #ifdef _GLIBCXX_DEBUG_ASSERT
-//         for (int i = 1; i <= 5;i++){
-//             for (int j = 1; j <= 5;j++){
-//                 printf("%d ", chart[i][j]);
-//             }
-//             puts("");
-//         }
-// #endif
+	#ifdef debug
+		for (int i = 1; i <= 5;i++){
+			for (int j = 1; j <= 5;j++){
+				printf(" %d ", chart[i][j]);
+			}
+			puts("");
+		}
+	#endif
+
         for (int i = 0; i < n;i++){
             if(pairs[i].second>m+1){
                 puts("-1");

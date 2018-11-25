@@ -1,8 +1,8 @@
-
 class AVLTree<T> {
     private class Node<T> {
         T key;
         int height;
+        int cnt;
         Node<T> left;
         Node<T> right;
 
@@ -11,21 +11,26 @@ class AVLTree<T> {
             this.left = left;
             this.right = right;
             this.height = 0;
+            this.cnt=0;
         }
 
         void Maintain(){
             if(this.left==null&&this.right==null){
                 this.height=0;
+                this.cnt=1;
             }
             else{
                 if(this.left==null){
                     this.height=this.right.height+1;
+                    this.cnt=this.right.cnt+1;
                 }
                 else if(this.right==null){
                     this.height=this.left.height+1;
+                    this.cnt=this.left.cnt+1;
                 }
                 else{
                     this.height=Math.max(this.left.height,this.right.height)+1;
+                    this.cnt=this.left.cnt+this.right.cnt+1;
                 }
             }
         }
@@ -33,23 +38,31 @@ class AVLTree<T> {
 
     }
 
-    Node<T> MaxInSubtree(Node<T> cur){
-        if(cur==null) return null;
-        if(cur.left==null&&cur.right==null) return cur;
-            Node<T> MaxLeft=MaxInSubtree(cur.left);
-            Node<T> MaxRight=MaxInSubtree(cur.right);
-            if(compare(MaxLeft.key,MaxRight.key)>0) {
-                if(compare(MaxLeft.key,cur.key)>0){
-                    return MaxLeft;
-                }
-                else return cur;
-            }
-            else {
-              if(compare(MaxRight.key,cur.key)>0)
-                  return MaxLeft;
-              else return cur;
-            }
+    private Node<T> MaxInSubtree(Node<T> cur){
+        Node<T> res=cur;
+        while (res.right!=null) res=res.right;
+        return res;
     }
+
+
+    private Node<T> MinInSubtree(Node<T> cur){
+        Node<T> res=cur;
+        while(res.left!=null) res=res.left;
+        return res;
+    }
+
+    private Node<T> find(Node<T> root,T key){
+        Node<T> cur=root;
+        while(cur!=null&&key!=cur.key){
+            if(compare(key,cur.key)<0){
+                cur=cur.left;
+            }
+            else
+                cur=cur.right;
+        }
+        return cur;
+    }
+
 
     <T extends Comparable<? super T>> AVLTree() {
         this.sz = 0;
@@ -171,7 +184,7 @@ class AVLTree<T> {
         return root;
     }
 
-    public void Insert(T val){
+    public void insert(T val){
         this.root=insert(root,val);
     }
 
@@ -203,9 +216,32 @@ class AVLTree<T> {
         else{
             if(root.left!=null&&root.right!=null){
                 if(root.left.height>root.right.height){
-
+                    Node<T> predecessor=MaxInSubtree(root.left);
+                    root.key=predecessor.key;
+                    root.left=remove(root.left,predecessor);
                 }
+                else{
+                    Node<T> successor=MinInSubtree(root.right);
+                    root.key=successor.key;
+                    root.right=remove(root.right,successor);
+                }
+            }
+            else{
+                Node<T> tmp=root;
+                root=(root.left!=null)?root.left:root.right;
+                tmp=null;
             }
         }
         root.Maintain();
+        return root;
     }
+
+    public void remove(T key){
+        Node<T> z=find(root,key);
+        if(z!=null){
+            root=remove(root,z);
+        }
+    }
+
+
+}

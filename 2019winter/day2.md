@@ -19,7 +19,7 @@
 
 - 当选择增加攻击增益时，贡献为
 
-![](http://latex.codecogs.com/gif.latex?\\\sum\limits_{j\in \{attack\}}(j-i)\cdot b_i=(z-y\cdot i)b_i)
+![](http://latex.codecogs.com/gif.latex?\\\sum\limits_{j\in\{attack\}}(j-i)\cdot\,b_i=(z-y\cdot\,i)b_i)
 
 ​       其中集合attack表示在i之后选择攻击的回合序号，z表示选择攻击的回合序号和。因为我们需要额外维护选择在当前天以后攻击的回合数和回合序号数之和，考虑DP方程`dp[x][y][z]`，表示**第x回合，在第x回合之后有y个回合选择攻击，这些攻击的回合序号和为z**， 这样我们就可以得到转移方程：
 

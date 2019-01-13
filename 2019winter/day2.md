@@ -16,7 +16,7 @@
 - 当选择攻击时，贡献为$a_i$；
 
 - 当选择增加攻击力时候，贡献为
-  ![](http://latex.codecogs.com/gif.latex?\y\cdot\\,c_i) 
+  ![](http://latex.codecogs.com/gif.latex?\\\,y\cdot\\,c_i) 
   其中y表示在i以后选择攻击的次数；
 
 - 当选择增加攻击增益时，贡献为

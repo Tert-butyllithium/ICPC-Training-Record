@@ -2,7 +2,7 @@
 
 难度 C < D < F < B < E < A < G
 
-## A - [2018 Asia EC Final I](https://codeforces.com/gym/102056/problem/I)
+## A - [2018 Asia EC Final I](https://codeforces.com/gym/102056/problem/I)
 
 这题当时现场想了好几个小时都没有做出来，一直推不出来dp方程，最后想了个假贪心把队友给演了
 

@@ -429,7 +429,7 @@ fun main(args: Array<String>) {
 }
 ```
 
-## F - [Educational Codeforces Round 40](https://codeforces.com/problemset/problem/954/G)
+## F - [Educational Codeforces Round 40 G](https://codeforces.com/problemset/problem/954/G)
 
 题意：城墙上有n个连成一排的区域，每个区域中有一些弓箭手。弓箭手们都有r的防御半径，也就是说，弓箭手能够防守到向左或向右r个区域加上自己所处区域的范围。每个区域的防御等级为能够防守到该区域的弓箭手数量的总和，而城墙的防御等级为各区域防御等级的最小值。现在我们共有k名备用弓箭手可以增援这n个区域。问增援后城墙的防御等级的最大值能达到多少
 

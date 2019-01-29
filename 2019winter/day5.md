@@ -11,25 +11,25 @@
 - ***积性函数***：满足 若a, b互质，则f (ab) = f (a)f (b) 的数论函 数称为积性函数。 
 
 - ***完全积性函数***：满足 f (ab) = f (a)f (b) 的数论函数称为完全积性函数
-- ***狄利克雷卷积***：对于数论函数$\displaystyle f,g$，定义其狄利克雷卷积$(f * g)(n) = \sum_{d|n} f(d) g(\frac{n}{d})$
+- ***狄利克雷卷积***：对于数论函数$\displaystyle f,g​$，定义其狄利克雷卷积$(f * g)(n) = \sum_{d|n} f(d) g(\frac{n}{d})​$
 
 - 两个积性函数的狄利克雷卷积仍为积性函数
 
 ## 一些常见的积性函数
 
-- 单位函数 $\displaystyle{e(x)=\cases{1, x=1 \\0,x>1}}$ 
+- 单位函数 $\displaystyle{e(x)=\cases{1, x=1 \\0,x>1}}​$ 
 - 常函数I(x)=1
 - 幂函数id(x)=$x^k$ 
 - 欧拉函数$\phi(x)$ 代表[1,x]中与x互质的个数=${\displaystyle \varphi (n)=\prod _{i=1}^{r}p_{i}^{k_{i}-1}(p_{i}-1)=\prod _{p\mid n}p^{\alpha _{p}-1}(p-1)=n\prod _{p|n}\left(1-{\frac {1}{p}}\right)}$ 
 
-## 莫比乌斯恒等式
+## 莫比乌斯函数
 
-
+$\sum\limits_{d|m}\mu(d)=[m=1]​$ 这是莫比乌斯函数最基本的定义，可以用这个可以将“等于1的数量”转化为莫比乌斯函数
 
 ## 杜教筛
 
 
-求 $S(n)=\sum_{i=1}^n f(i)$，其中 $f$ 是一个积性函数。
+求 $S(n)=\sum_{i=1}^n f(i)​$，其中 $f​$ 是一个积性函数。
 
 构造一个积性函数 $g$，那么由 $(f*g)(n)=\sum_{d|n}f(d)g(\frac{n}{d})$，得到 $f(n)=(f*g)(n)-\sum_{d|n,d<n}f(d)g(\frac{n}{d})$。
 
@@ -38,110 +38,101 @@ $\displaystyle\begin{eqnarray} g(1)S(n)&=&\sum_{i=1}^n (f*g)(i)-\sum_{i= 1}^{n}\
 当然，要能够由此计算 $S(n)$，会对 $f,g$ 提出一些要求：
 
 - $f*g$ 要能够快速求前缀和。
-- $g$ 要能够快速求分段和（前缀和）。
-- 对于正常的积性函数 $g(1)=1$，所以不会有什么问题。
+- $g​$ 要能够快速求分段和（前缀和）。
+- 对于正常的积性函数 $g(1)=1​$，所以不会有什么问题。
 
-在预处理 $S(n)$ 前 $n^{\frac{2}{3}}$ 项的情况下复杂度是 $O(n^{\frac{2}{3}})$
+在预处理 $S(n)​$ 前 $n^{\frac{2}{3}}​$ 项的情况下复杂度是 $O(n^{\frac{2}{3}})​$
 
-## A - HDU 4965
+## A - [HDU 4965](http://acm.hdu.edu.cn/showproblem.php?pid=4965)
 
-两个矩阵A，B，求（A*B）的N*N次幂。其中元素都%6 因为N范围是1000，K范围是6，如果直接对A \* B快速幂的话是对一个1000\*1000的矩阵操作，会TLE。所以可以先求出\*A的（N\*N-1）次方，这是一个5\*5的矩阵，再右乘A左乘B
-
-[refer](https://blog.csdn.net/baoli1008/article/details/38708059)
+两个矩阵A，B，求（A\*B）的N\*N次幂。其中元素都%6 因为N范围是1000，K范围是6，如果直接对A \* B快速幂的话是对一个1000\*1000的矩阵操作，会TLE。所以可以先求出\*A的（N\*N-1）次方，这是一个5\*5的矩阵，再右乘A左乘B
 
 ```c++
-#include <iostream>
-#include <cstdio>
-#include <cstring>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
- 
-struct mat{
-    int n,m;
-    vector<vector<int> >a;
-    mat(int n,int m):n(n),m(m){
-        a.resize(n);
-        for(int i=0;i<n;i++){
-            a[i].resize(m,0);
+
+struct Matrix{
+    vector<vector<int>> v;
+    int n, m;
+    Matrix(int n,int m,int op=0):n(n),m(m){
+        v.resize(n);
+        for(auto& e:v){
+            e.resize(m, 0);
+        }
+        if(op){
+            for (int i = 0; i < n && i < m;i++){
+            v[i][i] = 1;
+        }http://acm.hdu.edu.cn/showproblem.php?pid=4965
         }
     }
-    friend mat operator *(const mat &T,const mat &V){
-        mat tmp(T.n,V.m);
-        for(int i=0;i<T.n;i++){
-            for(int j=0;j<T.m;j++){
-                for(int k=0;k<V.m;k++){
-                    tmp.a[i][k]+=T.a[i][j]*V.a[j][k];
-                    tmp.a[i][k]%=6;
+    
+    friend Matrix operator *(const Matrix& mat,const Matrix& other){
+        Matrix ret = Matrix(mat.n, other.m);
+        for (int i = 0; i < mat.n; i++)
+        {
+            for (int j = 0; j < mat.m;j++){
+                for (int k = 0; k < other.m;k++){
+                    ret.v[i][k] += mat.v[i][j] * other.v[j][k];
+                    ret.v[i][k] %= 6;
                 }
             }
         }
-        return tmp;
+        return ret;
     }
-    mat pow(int p){
-        mat tmp(n,n);
-        mat k(n,n);
-        for(int i=0;i<n;i++){
-            for(int j=0;j<n;j++){
-                k.a[i][j]=a[i][j];
+
+    Matrix pow(int t) const{
+        Matrix ret = Matrix(this->n,this->n,1);
+        Matrix tmp = *this;
+        for (; t; t >>= 1,tmp=tmp*tmp)
+            if(t&1)
+                ret = ret * tmp;
+        return ret;
+    }
+
+    int sum() const{
+        int ret = 0;
+        for(auto& c:this->v){
+            for(auto& e:c){
+                ret += e;
             }
         }
-        for(int i=0;i<n;i++){
-            tmp.a[i][i]=1;
-        }
-        while(p){
-            if(p&1){
-                tmp=tmp*k;
-            }
-            k=k*k;
-            p>>=1;
-        }
-        return tmp;
+        return ret;
     }
 };
- 
-int main(){
-    int N,K;
-    while(scanf("%d%d",&N,&K)!=EOF){
-        if(!N&&!K) break;
-        mat x(N,K);
-        for(int i=0;i<N;i++){
-            for(int j=0;j<K;j++){
-                scanf("%d",&x.a[i][j]);
+
+int main(int argc,char const *argv[]){
+    int n, m;
+    while(scanf("%d%d", &n, &m)){
+        if(n==0&&m==0)
+            break;
+        Matrix a(n, m);
+        Matrix b(m, n);
+        for (int i = 0; i < n;i++){
+            for (int j = 0; j < m;j++){
+                scanf("%d", &a.v[i][j]);
             }
         }
-        mat y(K,N);
-        for(int i=0;i<K;i++){
-            for(int j=0;j<N;j++){
-                scanf("%d",&y.a[i][j]);
+        for (int i = 0; i < m;i++){
+            for (int j = 0; j < n;j++){
+                scanf("%d", &b.v[i][j]);
             }
         }
-        mat c(K,K);
-        c=y*x;
-        mat res(N,N);
-        res=c.pow(N*N-1);
-        res=x*res;
-        res=res*y;
-        int ans=0;
-        for(int i=0;i<N;i++){
-            for(int j=0;j<N;j++){
-                ans+=res.a[i][j];
-            }
-        }
-        printf("%d\n",ans);
+        auto ans = (a * ((b * a).pow(n*n - 1))) * b;
+        printf("%d\n", ans.sum());
     }
-    return 0;
 }
+
 ```
 
 ## B - UVA 10655
 
 题意：给出两个数字代表a+b和a\*b,再给一个数字n，求$a^n+b^n$ 
 
-题解：首先直接把这两个值带入二次方程求解是错误的，因为a和b可以为复数，如$2+i$ 与 $2-i$，我们无法处理这种情况
+题解：首先直接把这两个值带入二次方程求解是错误的，因为a和b可以为复数，如$2+i​$ 与 $2-i​$，我们无法处理这种情况
 
-考虑递推公式：$a^n+b^n=(a^{n-1}+b^{n-1})\cdot{(a+b)}-(a^{n-2}+b^{n-2})\cdot(ab)$
+考虑递推公式：$a^n+b^n=(a^{n-1}+b^{n-1})\cdot{(a+b)}-(a^{n-2}+b^{n-2})\cdot(ab)​$
 
-令$f(n)=a^n+b^n$，于是有$$\begin{bmatrix}
+令$f(n)=a^n+b^n​$，于是有$$\begin{bmatrix}
 a+b & -ab \\
 1 & 0  
 \end{bmatrix} 
@@ -151,7 +142,7 @@ f(n-2)
 \end{bmatrix} =\begin{bmatrix}
 f(n)\\
 f(n-1)
-\end{bmatrix}$$
+\end{bmatrix}​$$
 
 然后又是一个矩阵快速幂
 
@@ -175,9 +166,7 @@ Mat Mul(Mat x, Mat y)
     for(int i=0;i<n;i++)
       for(int j=0;j<n;j++)
         for(int k=0;k<n;k++)
-        {
             c.m[i][j]=c.m[i][j]+x.m[i][k]*y.m[k][j];
-          }
     return c; 
 }
 Mat pow(Mat x,ll y) 
@@ -232,13 +221,13 @@ int main(){
 
 题意：给定一个n格的环，现在有个距离d，每次变化把环和他周围距离d以内的格子相加，结果mod m，问经过k次变换之后，环上的各个数字
 
-题解：直接N^3会T，需要用循环矩阵优化到N^2
+题解：写成矩阵乘法形式很好想：距离d以内的为1，别的都是0。但是矩阵乘法直接N^3会T，需要用循环矩阵优化到N^2
 
 [refer](https://blog.csdn.net/accelerator_/article/details/37992531)
 
-## D - HDU 5680
+## D - [HDU 5680](http://acm.hdu.edu.cn/showproblem.php?pid=5608)
 
-题意：$f(x)$ 满足$N^2-3N+2=\sum_{d|N} f(d)$ ，求$\sum_{i=1}^{N} f(i)$ ， N<1e9，	且只有5个测试大于1e6
+题意：$f(x)​$ 满足$N^2-3N+2=\sum_{d|N} f(d)​$ ，求$\sum_{i=1}^{N} f(i)​$ ， N<1e9，	且只有5个测试大于1e6
 
 题解：杜教筛裸题
 
@@ -280,7 +269,7 @@ namespace dujiao {
         static LL pr[M], p_sz, d;
         //先利用莫比乌斯函数暴力算前sqrt(N)项前缀和
         FOR (i, 2, M) {
-            if (!vis[i]) { pr[p_sz++] = i; mu[i] = -1; }
+            if (!vis[i]) { pr[p_sz++] = i; mu[i-] = -1; }
             FOR (j, 0, p_sz) {
                 if ((d = pr[j] * i) >= M) break;
                 vis[d] = 1;
@@ -346,11 +335,268 @@ int main(int argc, char const *argv[])
 
 
 
-## E - HDU 5942
+## E - [HDU 5942](http://acm.hdu.edu.cn/showproblem.php?pid=5942)
 
-//TODO [莫比乌斯函数+容斥原理](https://blog.csdn.net/V5ZSQ/article/details/79849545)
+ [莫比乌斯函数+容斥原理](https://blog.csdn.net/V5ZSQ/article/details/79849545)
 
-## F - BZOJ 2818
+题意：定义$f(k)​$ 为k的素因子个数，$g(k)=2^{f(k)}​$ ,给一正整数n，$1\le\,n\le\,10^{12}​$ ，求$\sum\limits_{i=1}^{n}g(i)​$
 
-//TODO [莫比乌斯函数](https://blog.csdn.net/u010579068/article/details/47786203)
+题解：令$k=p_1^{a_1}\cdots\,p_n^{a_n}​$，则$g(k)=2^{f(k)}=2^m​$，即为集合$\{p^{a_1}_1,\cdots,p^{a_m}_m\}​$的子集个数，该集合一个子集的乘积p与该子集的补集（对全集合的补）的乘积q显然互素，且显然一一对应（k的任一互质的一对因子都可以拆成某个子集所有元素的积，和他的补的所有元素的积），也就是$g(k)=|\{(p,q)=1,pq=k\}|​$ ，记$h(n)=\sum\,g(i)=\sum\limits_{ij\le n}|(i,j)=1|=\sum\limits_{ij\le n}\sum\limits_{d|i, d|j}\mu(d)=\sum\limits_{d=1}^{\sqrt{n}}\mu(d)\sum\limits_{i=1}^{\lfloor n/d^2\rfloor}\lfloor n/d^2i\rfloor​$ 
+
+记$S(n)=\sum\limits_{i=1}^n\lfloor\,n/i\rfloor​$，于是$h(n)=\sum\limits_{d=1}^{\sqrt{n}}\mu(d)S(\lfloor\,n/d^2\rfloor)​$
+
+$S(n)=\sum\limits_{i=1}^{\sqrt{n}}\lfloor\,n/i\rfloor\,-\lfloor\sqrt{n}\rfloor^2​$
+
+记忆S(n)，然后枚举d即可，复杂度难以分析QAQ，另外这题时限15s，但是也卡常（比如分块计算S(n)就疯狂tle，后来还是[oeis](oeis.org)找到的严格$O(\sqrt{n})​$ 公式）
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll maxn = 1e6 + 5;
+const ll mod = 1e9 + 7;
+
+ll mu[maxn], S[maxn];
+void get_mu()
+{
+	mu[1] = 1;
+	static bool vis[maxn];
+	static ll prime[maxn], sz, d;
+	for (ll i = 2; i < maxn;i++){
+		if(!vis[i]){
+			prime[sz++] = i;
+			mu[i] = -1;
+		}
+		for (ll j = 0; j < sz && (d = i * prime[j]) < maxn;j++){
+			vis[d] = 1;
+			if(i%prime[j]==0){
+				mu[d] = 0;
+				break;
+			}
+			else
+				mu[d] = -mu[i];
+		}
+	}
+}
+
+ll getS(ll n){
+	ll res = 0;
+	ll sq = sqrt(n);
+	for (int i = 1; i <= sq; i++)
+	{
+		res += n / i;
+		res %= mod;
+	}
+	res = (res)*2ll-sq *sq;
+	res = (res + mod) % mod;
+	return res;
+}
+
+ll Sum(ll n){
+	if (n < maxn&&S[n]!=-1) return S[n];
+	ll res = getS(n);
+	if(n<maxn)
+		S[n] = res;
+	return res;
+}
+
+int main(int argc, char const *argv[])
+{
+	int round;
+	scanf("%d", &round);
+	get_mu();
+	memset(S, -1, sizeof(S));
+	for (int ca = 1; ca <= round; ca++)
+	{
+		ll n;
+		scanf("%lld", &n);
+		ll c = sqrt(n);
+		ll ans = 0;
+		for (ll i = 1; i <= c; i++)
+		{
+			if (mu[i])
+				ans = (ans + mu[i] * Sum(n / i / i) + mod) % mod;
+		}
+		printf("Case #%d: %lld\n", ca, ans);
+	}
+	return 0;
+}
+
+```
+
+
+
+
+## F - [BZOJ 2818](https://www.lydsy.com/JudgeOnline/problem.php?id=2818)
+
+题意：给定整数N，求1<=x,y<=N且gcd(x,y)为素数的数对(x,y)有多少对.
+
+题解：对于某个质数p，如果gcd(x,y)=p,等价于gcd(x/p,y/p)=1。要求满足这等式的数量，不妨令x<y，也就是求所有小于y/p中与之互质的数，即$\phi(y/p)​$ 
+
+于是对于每个质数，就是$2\sum\limits_{i=1}^{\lfloor\,N/p\rfloor}\phi(i)-1$ , 其中p是枚举的每个质数，\* 2是因为我们假定了x<y，-1是因为要排除x=y=1($\phi(1)=1​$)~~（其实我也不知道为啥-1）~~时的情形。
+
+接下来处理一下欧拉函数的前缀和即可。
+
+（这个代码跑了7s）
+
+```c++
+#include <cstdio>
+typedef long long ll;
+const ll p_max = 1E7 + 100;
+ll prime[p_max];
+ll phi[p_max];
+ll sumphi[p_max];
+void get_phi()
+{
+    phi[1] = 1;
+    static bool vis[p_max];
+    static ll p_sz, d;
+    for (ll i = 2; i < p_max;i++)
+    {
+        if (!vis[i])
+        {
+            prime[p_sz++] = i;
+            phi[i] = i - 1;
+        }
+        for (ll j = 0; j < p_sz && (d = i * prime[j]) < p_max; ++j)
+        {
+            vis[d] = 1;
+            if (i % prime[j] == 0)
+            {
+                phi[d] = phi[i] * prime[j];
+                break;
+            }
+            else
+                phi[d] = phi[i] * (prime[j] - 1);
+        }
+    }
+    sumphi[0] = phi[0];
+    for (int i = 1; i < p_max;i++){
+        sumphi[i] = sumphi[i - 1] + phi[i];
+    }
+}
+
+int main(){
+    get_phi();
+    ll n;
+    scanf("%lld", &n);
+    ll ans = 0;
+    for (int i = 0; prime[i] <= n;i++){
+        ans += 2 * sumphi[(n / prime[i])] - 1;
+    }
+    printf("%lld\n", ans);
+}
+```
+
+## G - [POJ 2155](http://poj.org/problem?id=2155)
+
+题意：给一个矩阵A，矩阵的元素要么是0要么是1，接下来有两个操作：区间修改和单点查询，区间修改是对一个矩形区域取反
+
+题解：二位树状数组，维护差分数组，取反就是+1，然后所有运算在%2意义下。
+
+```c++
+#include <cstdio>
+#include <cstring>
+inline int lowbit(int x) {
+    return x & (-x);
+}
+const int maxn = 1005;
+bool bit[maxn][maxn];
+
+void update(int x,int y,int val){
+    for (int i = x; i < maxn;i+=lowbit(i)){
+        for (int j = y; j < maxn;j+=lowbit(j)){
+            bit[i][j] ^= val;//所有的运算都是异或
+        }
+    }
+}
+
+bool query(int x,int y){
+    bool res = 0;
+    for (int i = x; i>0;i-=lowbit(i)){
+        for (int j = y; j>0;j-=lowbit(j)){
+            res ^= bit[i][j];
+        }
+    }
+    return res;
+}
+
+char op[1];
+
+int main(){
+    int round;
+    int m, n;
+    scanf("%d", &round);
+    while(round--){
+        memset(bit, 0, sizeof(bit));
+        scanf("%d%d", &m, &n);
+        while(n--){
+            scanf("%s", op);
+            if(op[0]=='C'){
+                int x1, y1, x2, y2;
+                scanf("%d%d%d%d", &x1, &y1, &x2, &y2);
+                x1++, y1++, x2++, y2++;//不先++的话可能会update到0而死循环
+                update(x2, y2, 1);//二维差分数组，后两项本应该-1但是这里-1同余到1
+                update(x1 - 1, y1 - 1, 1);
+                update(x1 - 1, y2, 1);
+                update(x2, y1 - 1, 1);
+            }
+            else{
+                int x, y;
+                scanf("%d%d", &x, &y);
+                printf("%d\n", query(x, y));
+            }
+        }
+        puts("");
+    }
+}
+```
+
+## H - [HDU 1724](http://acm.hdu.edu.cn/showproblem.php?pid=1724)
+
+题意：给一个椭圆（参数a，b）和两个值l和r(-a <= l <= r <= a)，以l和r作两条垂直x轴的直线，求这两条直线与椭圆围成曲边矩形的面积
+
+题解：辛普森公式
+
+注意：刚开始的时候疯狂tle因为公式写的太丑了。。。必要的化简应该被考虑
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+using LD = double;
+const LD eps = 1e-8;
+
+LD a,b;
+LD f(LD x){
+    return b*sqrt(1 - (x * x) / (a * a));
+}
+LD simpson(LD l, LD r)
+{
+    LD c = (l + r) / 2;
+    return (f(l) + 4 * f(c) + f(r)) * (r - l) / 6;
+}
+LD asr(LD l, LD r, LD eps, LD S)
+{
+    LD m = (l + r) / 2;
+    LD L = simpson(l, m), R = simpson(m, r);
+    if (fabs(L + R - S) < 15 * eps)
+        return L + R + (L + R - S) / 15;
+    return asr(l, m, eps / 2, L) + asr(m, r, eps / 2, R);
+}
+{
+    LD c = (l + r) / 2;
+    return (f(l) + 4 * f(c) + f(r)) * (
+LD asr(LD l, LD r, LD eps) { return asr(l, r, eps, simpson(l, r)); }
+
+int main()
+{
+    int round;
+    scanf("%d", &round);
+    while(round--){
+        LD l, r;
+        scanf("%lf%lf%lf%lf", &a, &b, &l, &r);
+        printf("%.3lf\n", 2.0 * asr(l, r,eps));
+    }
+}
+```
 

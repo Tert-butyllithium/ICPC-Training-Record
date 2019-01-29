@@ -337,8 +337,6 @@ int main(int argc, char const *argv[])
 
 ## E - [HDU 5942](http://acm.hdu.edu.cn/showproblem.php?pid=5942)
 
- [莫比乌斯函数+容斥原理](https://blog.csdn.net/V5ZSQ/article/details/79849545)
-
 题意：定义$f(k)​$ 为k的素因子个数，$g(k)=2^{f(k)}​$ ,给一正整数n，$1\le\,n\le\,10^{12}​$ ，求$\sum\limits_{i=1}^{n}g(i)​$
 
 题解：令$k=p_1^{a_1}\cdots\,p_n^{a_n}​$，则$g(k)=2^{f(k)}=2^m​$，即为集合$\{p^{a_1}_1,\cdots,p^{a_m}_m\}​$的子集个数，该集合一个子集的乘积p与该子集的补集（对全集合的补）的乘积q显然互素，且显然一一对应（k的任一互质的一对因子都可以拆成某个子集所有元素的积，和他的补的所有元素的积），也就是$g(k)=|\{(p,q)=1,pq=k\}|​$ ，记$h(n)=\sum\,g(i)=\sum\limits_{ij\le n}|(i,j)=1|=\sum\limits_{ij\le n}\sum\limits_{d|i, d|j}\mu(d)=\sum\limits_{d=1}^{\sqrt{n}}\mu(d)\sum\limits_{i=1}^{\lfloor n/d^2\rfloor}\lfloor n/d^2i\rfloor​$ 

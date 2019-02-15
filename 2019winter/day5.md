@@ -431,7 +431,7 @@ int main(int argc, char const *argv[])
 
 题解：对于某个质数p，如果gcd(x,y)=p,等价于gcd(x/p,y/p)=1。要求满足这等式的数量，不妨令x<y，也就是求所有小于y/p中与之互质的数，即$\phi(y/p)​$ 
 
-于是对于每个质数，就是$2\sum\limits_{i=1}^{\lfloor\,N/p\rfloor}\phi(i)-1$ , 其中p是枚举的每个质数，\* 2是因为我们假定了x<y，-1是因为要排除x=y=1($\phi(1)=1​$)~~（其实我也不知道为啥-1）~~时的情形。
+于是对于每个质数，就是$2\sum\limits_{i=1}^{\lfloor\,N/p\rfloor}\phi(i)-1​$ , 其中p是枚举的每个质数，\* 2是因为我们假定了x<y，-1是因为要排除x=y=1($\phi(1)=1​$)~~（其实我也不知道为啥-1）~~时的情形。
 
 接下来处理一下欧拉函数的前缀和即可。
 
@@ -483,6 +483,70 @@ int main(){
         ans += 2 * sumphi[(n / prime[i])] - 1;
     }
     printf("%lld\n", ans);
+}
+```
+
+解法二：令$\displaystyle{f(d):=\sum_{i=1}^N\sum_{j=1}^N[{\gcd(i,j)==d}]}$ , $\displaystyle{g(n):=\sum_{i=1}^N\sum_{i=1}^N{[n|\gcd(i,j)]}}$ , 非常显然，有$\displaystyle{g(n)=\sum_{n|d}f(d)}$ （g(n)=f(n)+f(2n)+f(3n)+…），并且$g(n)=[N/n]^2$ (n|i并且n|j，就是这么多)。 这样就可以莫比乌斯反演，得到$\displaystyle{f(n)=\sum_{n|d}g(d)\mu(d/n)=\sum_{n|d}\mu(d/n)[N/d]^2}$ , 于是$ans=\sum_{n\in prime}f(n)$ , 然后把g(d) 的部分提到外面，就得到$\displaystyle{ans=\sum_{d=1}^N[N/d]^2\sum_{n|d, n\in{prime}}\mu(d/n)}$然后预处理$\sum_{p|d,p\in{prime}}\mu(d/p)$ 即可：
+
+```c++
+for(int i:prime){//枚举质数
+    for(int j=1;i*j<=N;j++){//枚举d/n
+        sum[i*j]+=mu[j]
+    }
+}
+```
+
+（这个代码跑了9580ms）
+
+```c++
+#include <cstdio>
+typedef long long ll;
+
+const ll p_max = 1E7 + 100;
+ll prime[p_max], p_sz, d;
+ll mu[p_max];
+ll sum[p_max];
+void get_mu()
+{
+    mu[1] = 1;
+    static bool vis[p_max];
+    mu[1] = 1;
+    for (ll i = 2; i < p_max;i++)
+    {
+        if (!vis[i]) {
+            prime[p_sz++] = i;
+            mu[i] = -1;
+        }
+        for (ll j = 0; j < p_sz && (d = i * prime[j]) < p_max; ++j) {
+            vis[d] = 1;
+            if (i % prime[j] == 0) {
+                mu[d] = 0;
+                break;
+            }
+            else mu[d] = -mu[i];
+        }
+    }
+}
+inline ll sq(ll x){
+    return x * x;
+}
+
+int main()
+{
+    get_mu();
+    ll n;
+    scanf("%lld", &n);
+    for (int i = 0; i < p_sz; i++)
+    {
+        for (ll j = 1; prime[i] * j <= n;j++){
+            sum[prime[i] * j] += mu[j];
+        }
+    }
+    ll ans = 0;
+    for (int i = 1; i <= n;i++){
+        ans += sq(n / i) * sum[i];
+    }
+    printf("%lld", ans);
 }
 ```
 

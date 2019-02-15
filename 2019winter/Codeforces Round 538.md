@@ -1,5 +1,7 @@
 # Codeforces Round 538
 
+[Problems](https://codeforces.com/contest/1114)
+
 ## B 
 
 题意：给一个数组，要求划分为k段，使得每一段的前m大的和之和最大，输出答案和划分位置
@@ -88,7 +90,7 @@ if b is not 1:
 print(ans)
 ```
 
-# D
+## D
 
 题意：有一排格子上面标有不同的颜色，你可以选择某一个格子作为起点。如果一个线段内所有格子颜色均相等，则称其为一个联通块。你可以改变起点所在联通块的所有格子的颜色，问需要这样的操作多少次才能使这一排格子只剩下一种颜色。
 
@@ -127,6 +129,95 @@ int main(){
         }
     }
     printf("%d", min(dp[1][n][0],dp[1][n][1]));
+}
+```
+
+## E 
+
+题意：交互题，有一个乱序的等差数列，现在有两种操作：
+
+- 查询第i个值(1≤i≤1e6)
+- 检查是否有元素大于x
+
+这两种操作之和不能超过60次。其中数列容量不超过1e6，元素范围在1e9之内。求数列的最小值和公差
+
+题解：首先二分得到数列最大值an，需要执行第二项操作 log(1e9)=30次，然后随机取30个点，计算他们的差取最大公约数即可求的公差d。an-(n-1)\*d即为最小值(题解证明了随机算法造成的误差极低：1.8e-9)
+
+注意：随机数不要使用`rand()`， 请使用mt19937 和 mt19937_64，
+
+`chrono::steady_clock::now().time_since_epoch().count()` 可用于计时
+
+```c++
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count()); 
+vector<int> permutation(N);
+for (int i = 0; i < N; i++) permutation[i] = i;
+    shuffle(permutation.begin(), permutation.end(), rng);
+```
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int inf = 1e9;
+const int maxn = 1e6 + 10;
+int n;
+int arr[maxn];
+
+int gcd(int x,int y){
+    if(y==0)
+        return x;
+    return gcd(y, x % y);
+}
+
+int main(){
+    scanf("%d", &n);
+    for (int i = 1; i <= n;i++){
+        arr[i] = i;
+    }
+    mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+
+    int left = 1, right = inf;
+    int cnt = 0;
+    while (left < right)
+    {
+        int a1 = left + (right - left) / 2;
+        printf("> %d\n", a1);
+        fflush(stdout);
+        int op;
+        scanf("%d", &op);
+        cnt++;
+        if (op)
+        {
+            left = a1 + 1;
+        }
+        else{
+            right = a1;
+        }
+    }
+    int an = left;
+    cnt = min(59 - cnt,n);
+    vector<int> element;
+    vector<int> diffs;
+    shuffle(arr + 1, arr + n + 1,rng);
+    for (int i = 1; i <= cnt;i++)
+    {
+        printf("? %d\n", arr[i]);
+        fflush(stdout);
+        int x;
+        scanf("%d", &x);
+        element.push_back(x);
+    }
+    for (int i = 0; i < element.size(); i++)
+    {
+        for (int j = i + 1; j < element.size();j++){
+            diffs.push_back(abs(element[i] - element[j]));
+        }
+    }
+    int d = diffs[0];
+    for (int i : diffs)
+    {
+        d = gcd(d, i);
+    }
+    printf("! %d %d\n", an - (n - 1) * d, d);
 }
 ```
 

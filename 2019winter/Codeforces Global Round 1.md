@@ -49,9 +49,9 @@ int main(){
 
 题意：给定一个n长值域为m的序列，你要将其组成尽可能多的三元组(a,b,c)满足a=b=c或者b=a+1,c=b+1。
 
-题解：对于三个三元组(i,i+1,i+2)，它等价于三个三元组(i,i,i),..,(i+2,i+2,i+2)。也就是说每个三元组至多出现两次，用`dp[i][j][k]` 记录答案，表示前i种牌中并且之后会（至多）有j个(i,i+1,i+2)和k个(i-1,i,i+1)，状态转移时，需要枚举前i个有x个(i-2,i-1,i) ，于是得到转移方程$dp(i,a,b)=\max_{0\leq c \leq 2}(dp(i-1,b,c)+c+(cnt-a-b-c) / 3)$
+题解：对于三个三元组(i,i+1,i+2)，它等价于三个三元组(i,i,i),..,(i+2,i+2,i+2)。也就是说每个三元组至多出现两次，用`dp[i][a][b]` 记录答案，表示前i种牌中并且之后会（至多）有a个(i,i+1,i+2)和b个(i-1,i,i+1)，状态转移时，需要枚举前i个有c个(i-2,i-1,i) ，于是得到转移方程$dp(i,a,b)=\max_{0\leq c \leq 2}(dp(i-1,b,c)+c+(cnt-a-b-c) / 3)$
 
-注意：考虑状态转移时，如果需要考虑情况太多，那么应当尝试把更多的状态记录进去，应该尽量使状态转移方程的枚举量只有一个
+注意：考虑状态转移时，如果需要考虑情况太多，那么应当尝试把更多的状态记录进去，应该尽量使状态转移方程的枚举量只有一个，[西安](https://codeforces.com/gym/102056/problem/I)那个题也用了类似这样的思路
 
 ```c++
 #include <bits/stdc++.h>
@@ -91,5 +91,44 @@ int main(){
     printf("%d\n", ans);
 }
 
+```
+
+## E 
+
+题意：有一个操作：把数组第i(1<i<n)个元素变成arr[i-1]+arr[i+1]-arr[i]，现在有两个这样的数组，问能否对第一个数组操作有限次使得第一个数组变成与第二个数组相等
+
+题解：这题好眼熟...，考虑差分数组，会发现每次这样的操作相当于交换差分数组的响铃两个元素。那么我们只需要对两个差分数组排序，使他们相等就完事了。
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn = 1e5 + 10;
+
+int arr1[maxn],arr2[maxn];
+int diff1[maxn],diff2[maxn];
+
+int main(){
+    int n;
+    scanf("%d", &n);
+    for (int i = 1; i <= n;i++){
+        scanf("%d", &arr1[i]);
+    }
+    for (int i = 1; i <= n;i++){
+        scanf("%d", &arr2[i]);
+    }
+    for (int i = 1; i <= n;i++){
+        diff1[i] = arr1[i] - arr1[i - 1];
+        diff2[i] = arr2[i] - arr2[i - 1];
+    }
+    sort(diff1 + 2, diff1 + n+1);
+    sort(diff2 + 2, diff2 + n+1);
+    for (int i = 1; i <= n;i++){
+        if(diff1[i]!=diff2[i]){
+            puts("No");
+            return 0;
+        }
+    }
+    puts("Yes");
+}
 ```
 

@@ -1,2 +1,3 @@
-# ACM
-所有练习过程中的值得review的题目都会放入其中
+# ICPC-Training-Record
+
+以此纪念我前两年的大学生活
